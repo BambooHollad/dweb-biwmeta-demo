@@ -1,0 +1,31 @@
+{
+    "id": "demo.demo.dweb",
+    "name": "Demo",
+    "short_name": "Demo",
+    "description": "应用简介\n换行简介",
+    "logo": "https://应用logo在商城内的显示",
+    "icons": [
+        {
+            "src": "https://应用logo在钱包内的显示"
+        }
+    ],
+    "images": [
+        "https://应用的展示内容截图链接",
+        "https://应用的展示内容截图链接",
+        "https://应用的展示内容截图链接",
+        "https://应用的展示内容截图链接"
+    ],
+    "languages": [
+        "中文"
+    ],
+    "author": [
+        "@demo.demo"
+    ],
+    "change_log": "1.这里显示版本更新内融\n2.换行显示内容",
+    "version": "",
+    "home": "https://www.demo.demo",
+    "homepage_url": "https://www.demo.demo",
+    "categories": [
+        "application"
+    ]
+}
