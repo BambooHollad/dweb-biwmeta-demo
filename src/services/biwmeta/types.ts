@@ -9,7 +9,7 @@ export enum $WALLET_PLAOC_PATH {
 /** 钱包内的链 */
 export enum CHAIN_NAME {
     /// 统称内链
-    BIWMETA = 'BIWMeta',
+    BIWMeta = 'BIWMeta',
     /// 以下统称叫外链
     Binance = 'Binance',
     Tron = 'Tron',
@@ -72,10 +72,40 @@ export type $WALLET_ASSETTYPE_BALANCE = {
     }>;
 }
 
-/** 签名传参类型:(目前仅需要签名文本) */
-export type $WALLET_SIGNATURE_PARAMETER = $WALLET_SIGNATURE_MESSAGE | $WALLET_ASSETTYPE_BALANCE;
+/** 通过钱包获取转账交易体（拿到交易体自行决定啥时候广播，钱包只负责给出签名好的转账交易） */
+export type $WALLET_SIGNATURE_TRANSFER = {
+    type: $WALLET_SIGNATURE_TYPE.transfer,
+    chainName: CHAIN_NAME,
+    senderAddress: string,
+    receiveAddress: string,
 
-/** 签名返回类型:(目前仅需要签名文本) */
+    balance: string, // 本次转账数量
+    assetType?: string, // 这个assetType不填，默认主币种（BIW, BNB, ETH, TRX）, 填的话只用于BIWMeta链，别的链的是走智能合约，拿里面的参数的，这里可以不填
+    fee?: string, // BIWMeta手续，不填的话 钱包会自动补充，如果不是BIWMeta直接忽略
+
+    ethereumGasInfo?: { // ethereum 手续费计算，不填钱包会补充，如果不是ethereum直接忽略
+        maxPriorityFeePerGas: string,
+    },
+
+    binanceGasInfo?: { // binance 手续费计算，不填钱包会补充，如果不是binance直接忽略
+        gasLimit: number | string,
+        gasPrice: number | string,
+    },
+
+    contractInfo?: { // 转账合约币种， 只用于并通用：binance  ethereum  tron
+        contractAddress: string, // 合约地址
+        assetType: string, // 币种
+        decimals: number | string, // 对应的精确度
+    },
+
+    remark?: { [key: string]: string }; // 向BIWMeta交易体内写入备注，只用于biwmeta
+
+}
+
+/** 签名传参类型 */
+export type $WALLET_SIGNATURE_PARAMETER = $WALLET_SIGNATURE_MESSAGE | $WALLET_ASSETTYPE_BALANCE | $WALLET_SIGNATURE_TRANSFER;
+
+/** 签名返回类型 */
 export type $WEALLET_SIGNATURE_RESPONSE =
     /**签名后的字符串 */
     | string
@@ -87,7 +117,14 @@ export type $WEALLET_SIGNATURE_RESPONSE =
             balance: string,// 余额
             contracts?: string,// 合约
         } | undefined;
-    };
+    }
+    | {
+        txId: string, // 交易的ID
+        transaction:
+        | string // binance  ethereum
+        | { [key: string]: string } // BIWMeta的交易体，BFChainCore有对应的交易体类型，这边就不引入了，有需要的话问后端拿
+        | { [key: string]: any } // tron的交易体，你们用不到这个也就不补类型了，有序的话 跟我说下 我补
+    }
 
 /** 钱包调用传参 */
 export type $WALLET_PLAOC_PATH_REQUEST_PARAMETER = {
